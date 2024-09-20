@@ -1,0 +1,50 @@
+﻿
+
+.dropup button {
+    color: black;
+    padding-bottom: 5px;
+}
+
+.table tbody tr:last-child {
+    border-bottom-color: transparent;
+}
+
+.dropdown-menu-up {
+    top: auto;
+    bottom: 100%;
+    transform: translateY(-5px);
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+}
+
+.card-header {
+    background-color: var(--main-color);
+    border-radius: 12px;
+    color:white;
+}
+
+.numbercards {
+    border-left: 5px solid black;
+}
+
+    .numbercards:hover {
+        color: white;
+        background-color: black;
+        transform: scale(1.05);
+        transition: transform 0.3s ease-in-out;
+    }
+
+        .numbercards:hover .bi::after {
+            color: white;
+        }
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+  
+}

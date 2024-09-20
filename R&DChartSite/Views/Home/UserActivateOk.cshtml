@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "Aktivasyon Tamamlandı | Ortem Elektronik";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="login-info">
+    <div class="card-body">
+        <div class="container-fluid">
+            <div class="row main">
+                <div class="main-content">
+                    <div class="text-black text-center">
+                        <h4>Aktivasyon Tamamlandı</h4>
+                        <br />
+                        <h6 class="text-center">
+                            Giriş sayfasına yönlendiriliyorsunuz...
+                        </h6>
+                        <hr />
+                            <div class="container-fluid"> 
+                                <a href="/Home/Login">Otomatik olarak yönlendirilmezseniz buraya tıklayın.</a>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function () {
+        setTimeout(function () {
+            window.location = "/Home/Login";
+        },3000)
+    })
+</script>
+

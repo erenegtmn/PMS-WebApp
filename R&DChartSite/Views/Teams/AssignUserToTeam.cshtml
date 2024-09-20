@@ -1,0 +1,56 @@
+﻿@model RDChartSite.Entities.ValueObjects.TeamAssignmentViewModel
+@using RDChartSite.Entities
+@{
+    ViewBag.Title = "Ekibe Üye Ata";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    List<Users> users = new List<Users>();
+    users = Model.Users.ToList();
+    List<Teams> teams = new List<Teams>();
+    teams = Model.Teams.ToList();
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-6">
+                <div class="card mt-5">
+                    <div class="card-body">
+
+                        <div class="form-group">
+                            <label asp-for="SelectedUserId">Çalışan Seçin:</label>
+                            <select asp-for="SelectedUserId" asp-items="new SelectList(Model.Users, nameof(Users.Id), nameof(Users.Name))" class="form-control">
+                                <option value="">-- Çalışan Seçin --</option>
+                                @foreach (var item in users)
+                                {
+                                    <option value="@item.UserId">@item.Name @item.Surname</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedUserId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="SelectedTeamId">Ekip Seçin:</label>
+                            <select asp-for="SelectedTeamId" asp-items="new SelectList(Model.Teams, nameof(Teams.TeamId), nameof(Teams.TeamName))" class="form-control">
+                                <option value="">-- Ekip Seçin --</option>
+                                @foreach (var item in teams)
+                                {
+                                    <option value="@item.TeamId">@item.TeamName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="SelectedTeamId" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success mt-2 w-100">Ekibe Ekle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+

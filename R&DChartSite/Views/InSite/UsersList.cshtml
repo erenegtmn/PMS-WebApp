@@ -1,0 +1,109 @@
+﻿@model IEnumerable<RDChartSite.Entities.Users>
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Kullanıcılar";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    UserManager userManager = new UserManager();
+    List<Users> users = userManager.GetUsers();
+    ActivitiesManager activitiesManager = new ActivitiesManager();
+    
+}
+
+<style>
+    .round-container {
+        width: 85px;
+        height: 85px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: solid 4px #992d2d;
+    }
+
+        .round-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: fill;
+        }
+
+    .card {
+        border-radius: 18px;
+        transition: box-shadow 0.3s ease-in-out;
+        margin-bottom: 20px; 
+    }
+
+        .card:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+        }
+
+    .card-body {
+        padding: 20px;
+    }
+
+       
+        .card-body .col-md-3 {
+            border-right: 1px solid #992d2d;
+            padding-right: 15px;
+        }
+
+           
+            .card-body .col-md-3:last-child {
+                border-right: none; 
+                padding-right: 0;
+            }
+          .text-muted{
+              font-size:0.9rem;
+          }
+</style>
+
+
+
+@foreach (var item in users)
+{
+    <div class="card  mt-4 ms-3" style="border-radius:18px;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3  ">
+                    <div class=" d-flex align-items-center ms-2">
+                        <div class="round-container">
+                            <img src="~/img/user.png" alt="User Image">
+                        </div>
+                        <div class="col ms-1" style="font-size:18px;">
+                            <p class="mb-0 fw-bold">@item.Name @item.Surname.ToUpper()</p>
+                            <p class="mb-0 text-muted">@item.Email</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-center ">
+                    <div class="align-items-center ms-2 mb-0">
+                        <div class="col ms-2" style="font-size: 18px;">
+                            <p class="mb-0 fw-bold">Ekip</p>
+                            <p class="mb-0 text-muted"> @(item.Team != null ? item.Team.TeamName : "System")</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-center ">
+                    <div class="align-items-center ms-2 mb-0">
+                        <div class="col ms-2" style="font-size: 18px;">
+                            <p class="mb-0 fw-bold">Proje Sayısı</p>
+                            <p class="mb-0 text-muted">@item.Projects.Count()</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-center ">
+                    <div class="align-items-center ms-2 mb-0">
+                        <div class="col ms-2" style="font-size: 18px;">
+                            <p class="mb-0 fw-bold">Aylık Mesai Saati</p>
+                            <p class="mb-0 text-muted"> @activitiesManager.CountMonthlyWorkHour(item.UserId)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

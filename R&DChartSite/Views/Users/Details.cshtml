@@ -1,0 +1,109 @@
+﻿@model RDChartSite.Entities.Users
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Kullanıcı Bilgileri";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    Users user = new Users();
+    Users currentUser = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    List<Projects> currentusersprojects = new List<Projects>();
+}
+@{
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+        currentUser = userManager.Find(x => x.UserId == user.UserId);
+        if (currentUser != null)
+        {
+            currentusersprojects = projectsManager.GetCurrentUsersProjects(currentUser.UserId);
+
+        }
+    }
+}
+
+
+
+<style>
+    .card {
+        margin-top: 50px;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .card-body {
+        background-color: #ffffff;
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+    }
+
+    .company-logo {
+        background-image: url("~/img/2.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        opacity: 0.2;
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Kullanıcı Profili
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="~/img/2.png" class="img-fluid" alt="User Avatar">
+                        </div>
+                        <div class="col-md-8">
+                            <h5>@currentUser.Name @currentUser.Surname</h5>
+                            <p>@currentUser.Email</p>
+                            <hr />
+                            <h6>Aktif Projeler:</h6>
+                            <ul class="list-group-horizontal-sm list-group-flush ">
+                                @if (currentusersprojects != null && currentusersprojects.Count > 0)
+                                {
+                                    foreach (var item in currentusersprojects)
+                                    {
+                                        <li class="list-group-item">
+                                            <i class="bi bi-check"></i> @item.ProjectName - @item.ProjectCode
+                                        </li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        Aktif projeniz bulunmamaktadır...
+                                    </li>
+                                }
+                            </ul>
+                            @if ((currentusersprojects != null && currentusersprojects.Count > 0))
+                            {
+                                <a href="@Url.Action("UserProjectEdit", new { UserId = currentUser.UserId })">Aktif Projeleri Düzenle..</a>
+
+                            }
+                            else
+                            {
+                                <a class="link-dark" href="~/Projects/Index">Proje eklemek için tıklayın</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <div>
+                        <a href="@Url.Action("Edit", new { UserId = currentUser.UserId })">Kullanıcı Bilgilerini Düzenle</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

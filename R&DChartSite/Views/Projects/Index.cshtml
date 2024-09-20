@@ -1,0 +1,117 @@
+﻿@model IEnumerable<RDChartSite.Entities.Projects>
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Proje Listesi";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    Users user = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    List<Projects> currentusersprojects = new List<Projects>();
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+        Users currentUser = userManager.Find(x => x.UserId == user.UserId);
+
+        if (currentUser != null)
+        {
+            currentusersprojects = projectsManager.GetCurrentUsersProjects(currentUser.UserId);
+
+        }
+
+    }
+}
+<link href="~/css/switchtoggle.css" rel="stylesheet" />
+
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="col-1">
+
+        </div>
+        <div class="col-md-10">
+            <table class="table table-sm tablenodesc">
+                <tr id="headers">
+                    <th>
+                        <h6><b>Proje Adı</b></h6>
+                    </th>
+                    <th>
+                        <h6><b>Proje Kodu</b></h6>
+                    </th>
+                    @{
+                        if (Session["Login"] != null)
+                        {
+                            user = Session["Login"] as Users;
+                            if (user.IsAdmin == true)
+                            {
+                                <th>
+                                    <h6><b>Proje Durumu</b></h6>
+                                </th>
+                                <th>
+                                    <p>
+                                        @Html.ActionLink("Yeni Proje Oluştur", "Create")
+                                    </p>
+                                </th>
+
+                            }
+                        }
+                    }
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="project-checkbox">
+                            @{
+                                if (item.IsProjectActive != false)
+                                {
+                                    bool isSelected = user != null && currentusersprojects
+                                        != null && currentusersprojects.Any(p => p.Id == item.Id);
+                                    <input type="checkbox" id="@item.ProjectCode" name="selectedProjects"
+                                           value="@item.Id" @(isSelected ? "checked" : "") />
+                                }
+                                <label for="@item.ProjectCode" title="@item.ProjectName">@item.ProjectName</label>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProjectCode)
+                        </td>
+                        @if (Session["Login"] != null)
+                        {
+                            user = Session["Login"] as Users;
+                            if (user.IsAdmin == true)
+                            {
+                                <td>
+                                    @{
+                                        if (item.IsProjectActive == true)
+                                        {
+                                            <span>Aktif</span>
+                                        }
+                                        else if (item.IsProjectActive == false)
+                                        {
+                                            <span>Pasif</span>
+                                        }
+                                    }
+                                </td>
+                            }
+                        }
+                        @if (user.IsAdmin == true)
+                        {
+                            <td>
+                                @Html.ActionLink("Düzenle", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Detaylar", "Details", new { id = item.Id }) |
+                                @Html.ActionLink("Sil", "Delete", new { id = item.Id })
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+
+        </div>
+        <div class="col-1">
+        </div>
+    </div>
+    <div class="container text-center">
+        <button type="submit" class="btn btn-success">Proje Seçimlerini Onayla</button>
+    </div>
+}
+<script src="~/Scripts/TableChange.js"></script>

@@ -1,0 +1,58 @@
+
+
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px !important;
+}
+
+.card-header {
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+    background-color: var(--main-color);
+    color: white;
+   
+}
+
+h5 {
+    font-size:16px;
+}
+
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
+
+#tbl td:nth-child(2),
+#tbl th:nth-child(2) {
+    width: 50%;
+}
+
+.col {
+    margin-top: 10px;
+}
+
+#tables {
+    margin-top: 10px;
+}
+
+#col1 {
+    overflow-y: scroll;
+}
+
+tr {
+    max-height: 5px;
+}
+
+input {
+    border: solid 1px;
+    border-radius: 2px;
+    border-color: grey;
+}
+
+.pie-graph {
+    max-width: 330px;
+    max-height: 500px;
+}

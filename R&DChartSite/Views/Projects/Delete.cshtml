@@ -1,0 +1,42 @@
+﻿@model RDChartSite.Entities.Projects
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+
+
+<h3>Projeyi silmek istediğinize emin misiniz?</h3>
+<div>
+
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProjectCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProjectCode)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-danger" />
+            @Html.ActionLink("Listeye Geri Dön", "Index", new { }, new { @class = "btn btn-secondary" })
+        </div>
+    }
+</div>

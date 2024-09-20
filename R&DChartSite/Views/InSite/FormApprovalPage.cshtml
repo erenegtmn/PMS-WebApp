@@ -1,0 +1,38 @@
+﻿@using RDChartSite.Entities
+@model OffDayForms
+@{
+    ViewBag.Title = "İzin Talebi İnceleme";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+<style>
+    .card {
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 0 auto;
+    }
+</style>
+<div class="card">
+    <h2>İzin Talep Formu</h2>
+    <p>Aşağıda belirtilen izin formunun bilgilerini içeren bir talep alındı:</p>
+    <p>
+        Ad Soyad: @Model.User.Name @Model.User.Surname<br>
+        Başlangıç Tarihi: @Model.StartDate<br>
+        Dönüş Tarihi: @Model.ReturnDate<br>
+        İzin Türü: @Model.PType<br>
+        Başlangıç Saati: @Model.StartTime<br>
+        Dönüş Saati: @Model.ReturnTime<br>
+        Proje Kodu: @Model.ProjectCode<br>
+        Açıklama: @Model.Description<br>
+        İzin Nedeni: @Model.Reason
+    </p>
+    <form method="post">
+        <input type="hidden" name="FormGuid" value="@Model.FormGuid" />
+        <button type="submit" name="approval" value="true" class="btn btn-outline-success">Onayla</button>
+        <button type="submit" name="approval" value="false" class="btn btn-outline-danger">Reddet</button>
+    </form>
+</div>
+

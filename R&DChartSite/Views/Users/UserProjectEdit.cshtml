@@ -1,0 +1,94 @@
+﻿@model RDChartSite.Entities.Users
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Proje Kaydı Düzenleme";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    Users user = new Users();
+    Users currentUser = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    List<Projects> currentusersprojects = new List<Projects>();
+}
+@{
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+        currentUser = userManager.Find(x => x.UserId == user.UserId);
+        if (currentUser != null)
+        {
+            currentusersprojects = projectsManager.GetCurrentUsersProjects(currentUser.UserId);
+
+        }
+    }
+}
+<style>
+    .card {
+        margin-top: 100px;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .card-body {
+        background-color: #ffffff;
+    }
+
+    .card-footer {
+        background-color: #f8f9fa;
+    }
+</style>
+@using (Html.BeginForm())
+
+{@Html.AntiForgeryToken()
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Kullanıcı Projeleri
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>@currentUser.Name @currentUser.Surname</h5>
+                            <p>@currentUser.Email</p>
+                            <hr />
+                            <h6>Kaldırmak istediğiniz projeyi seçin:</h6>
+                            <ul class="list-group-horizontal-sm list-group-flush">
+                                @if (currentusersprojects != null && currentusersprojects.Count > 0)
+                                {
+                                    foreach (var item in currentusersprojects)
+                                    {
+                                        <li class="list-group-item">
+                                            <input type="checkbox" id="@item.ProjectCode" name="selectedProjects" value="@item.Id" /> @item.ProjectName - @item.ProjectCode
+                                        </li>
+
+                                    }
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        Aktif projeniz bulunmamaktadır...
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a class="link-dark text-sm-center" href="~/Projects/Index">Proje eklemek için tıklayın</a>
+                                    </li>
+                                }
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <div>
+                        <button type="submit" class="btn btn-success">Kaydet</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

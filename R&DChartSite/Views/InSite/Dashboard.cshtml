@@ -1,0 +1,203 @@
+﻿@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    Users user = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    ActivitiesManager activitiesManager = new ActivitiesManager();
+    List<Projects> currentusersprojects = new List<Projects>();
+    Users currentUser = new Users();
+
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+        currentUser = userManager.Find(x => x.UserId == user.UserId);
+    }
+    DailyActivity usersactivities = activitiesManager.Find(x => x.UserId == currentUser.UserId);
+    List<Users> users = userManager.GetAllUsersIncludingProjects();
+}
+
+<link href="~/css/DashboardStyle.css" rel="stylesheet" />
+<div class="container-fluid">
+    <div class="row justify-content-between">
+        <div class="col-sm-3 mb-4">
+            <div class="card numbercards users">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people-fill" style="font-size: 80px; color: #992d2d;"></i>
+                    <div class="ms-3">
+                        <h1 class="mb-0">@userManager.TotalUserCount()</h1>
+                        <p class="mb-0" style="font-size: 20px;">Kullanıcı</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card numbercards projects mt-4">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <i class="bi bi-list-task" style="font-size: 80px; color: #992d2d;"></i>
+                    <div class="ms-3">
+                        <h1 class="mb-0">@projectsManager.TotalProjectsCount()</h1>
+                        <p class="mb-0" style="font-size: 20px;">Proje</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card numbercards activities mt-4">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <i class="bi bi-calendar4-week" style="font-size: 80px; color: #992d2d;"></i>
+                    <div class="ms-3">
+                        <h1 class="mb-0">@activitiesManager.GetHourlyActivityCountInWeek()</h1>
+                        <p class="mb-0" style="font-size: 20px;">Haftalık </p>
+                        <p class="mb-0" style="font-size: 20px;">Aktivite</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-9 mb-4">
+            <div class="col-lg-12">
+                <div class="card" style="height: 510px;">
+                    <div class="card-header text-center " style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                        <h6 class="card-text ">PROJE/ÇALIŞAN DAĞILIMI</h6>
+                    </div>
+                    <div class="card-body ">
+                        <canvas id="doughnutchart" style="max-height: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-sm-12 mb-4">
+            
+                <div class="card">
+                    <div class="card-header text-center" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                        <h6 class="card-text ">PROJELERİN SAATLİK DAĞILIMI</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="linechart"></canvas>
+                    </div>
+
+                </div>
+          
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col">
+            <div class="card">
+                <div class="card-header text-center" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                    <h6 class="card-text ">ÇALIŞAN LİSTESİ</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">İsim</th>
+                                <th scope="col">Soyisim</th>
+                                <th scope="col">Proje Sayısı</th>
+                                <th scope="col">Toplam Saat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var data in users)
+                                {
+                                    <tr>
+                                        <th scope="row">@data.UserId</th>
+                                        <td>@data.Name</td>
+                                        <td>@data.Surname</td>
+                                        <td>
+                                            <div class="dropup">
+                                                <button class="btn btn-link dropdown-toggle project-count" type="button" id="projectDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    @data.Projects.Count()
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-up" aria-labelledby="projectDropdown">
+                                                    @foreach (var project in data.Projects)
+                                                    {
+                                                        <a class="dropdown-item" href="#">@project.ProjectName</a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@activitiesManager.GetHourlyActivityCount(data.UserId)</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div style="display:none">
+    <table class="table table-sm" id="users">
+        <tbody>
+            @{
+                Dictionary<string, int> UserCountForProject = projectsManager.UsersForProjectsCount();
+                foreach (var item in UserCountForProject)
+                {
+                    string projectName = projectsManager.FindProjectNameByCode(item.Key);
+                    if (item.Value > 0)
+                    {
+                        <tr>
+                            <td>@projectName</td>
+                            <td>@item.Value</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<div style="display:none">
+    <table class="table table-sm" id="hours">
+        <tbody>
+            @{
+                Dictionary<string, int> timeCountByProjectCode = activitiesManager.GetTimeCountByProjectCode();
+                foreach (var item in timeCountByProjectCode)
+                {
+                    string projectName = projectsManager.FindProjectNameByCode(item.Key);
+                    <tr>
+                        <td>@projectName</td>
+                        <td>@item.Value</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.projects').click(function () {
+            window.location.href = '/InSite/ProjectsDashboardList';
+        });
+    });
+
+    $(document).ready(function () {
+        $('.activities').click(function () {
+            window.location.href = '/Insite/WeeklyActivities';
+        });
+    });
+
+    $(document).ready(function () {
+        $('.users').click(function () {
+            window.location.href = '/InSite/UsersList';
+        });
+    });
+    $(document).ready(function () {
+        $('.project-count').on('click', function () {
+            $(this).siblings('.dropdown-menu').toggleClass('show');
+        });
+    });
+</script>
+<script src="~/Scripts/DoughnutChart.js"></script>
+<script src="~/Scripts/LineChart.js"></script>

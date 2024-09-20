@@ -1,0 +1,192 @@
+﻿@model RDChartSite.Entities.ValueObjects.MonthlyDataModel
+@using RDChartSite.BussinessLayer
+@using RDChartSite.Entities
+@{
+    UserManager userManager = new UserManager();
+    Users user = new Users();
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+    }
+
+    DateTime currentDate = DateTime.Now;
+    int currentMonth = currentDate.Month;
+    int currentYear = currentDate.Year;
+
+    string currentMonthName = currentMonth.ToString("MMMM");
+    List<KeyValuePair<int, string>> ayListesi = new List<KeyValuePair<int, string>>
+{
+        new KeyValuePair<int, string>(1, "Ocak"),
+        new KeyValuePair<int, string>(2, "Şubat"),
+        new KeyValuePair<int, string>(3, "Mart"),
+        new KeyValuePair<int, string>(4, "Nisan"),
+        new KeyValuePair<int, string>(5, "Mayıs"),
+        new KeyValuePair<int, string>(6, "Haziran"),
+        new KeyValuePair<int, string>(7, "Temmuz"),
+        new KeyValuePair<int, string>(8, "Ağustos"),
+        new KeyValuePair<int, string>(9, "Eylül"),
+        new KeyValuePair<int, string>(10, "Ekim"),
+        new KeyValuePair<int, string>(11, "Kasım"),
+        new KeyValuePair<int, string>(12, "Aralık")
+    };
+}
+<style>
+    .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+        background: #992d2d;
+        color: #191919;
+        border-color: #992d2d;
+    }
+</style>
+<div class="container" >
+   
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-tabs justify-content-center bg-dark" id="myTab" role="tablist" 
+                style=" border:1px;border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                @foreach (var ay in ayListesi)
+                {
+                    string ayId = "tab-" + ay.Key;
+                    string tabPaneId = "tab-pane-" + ay.Key;
+
+                    string activeClass = ay.Key == currentMonth ? "active" : "";
+
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link @activeClass text-white " id="@ayId" data-bs-toggle="tab" href="#@tabPaneId" 
+                           role="tab" aria-controls="@tabPaneId" aria-selected="@activeClass">@ay.Value</a>
+                    </li>
+                }
+            </ul>
+            <div class="table-responsive">
+                <div class="tab-content" id="myTabContent">
+                    @foreach (var ay in ayListesi)
+                    {
+                        string tabPaneId = "tab-pane-" + ay.Key;
+
+                        string activeClass = ay.Key == currentMonth ? "show active" : "";
+
+                        <div class="tab-pane carousel-fade @activeClass" id="@tabPaneId" role="tabpanel" aria-labelledby="@ay.Key">
+                            <table class="table table-bordered border-dark" style="height:450px">
+                                <thead class="table-dark">
+                                    <tr class="text-center">
+                                        <th colspan="7"><h5>@ay.Value.ToUpper()</h5></th>
+                                    </tr>
+                                    <tr class="text-center">
+                                        <th>Pzt</th>
+                                        <th>Sal</th>
+                                        <th>Çar</th>
+                                        <th>Per</th>
+                                        <th>Cum</th>
+                                        <th>Cmt</th>
+                                        <th>Paz</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        DateTime tempdate = new DateTime(currentYear, ay.Key, 1);
+                                        int daysInMonth = DateTime.DaysInMonth(currentYear, ay.Key);
+                                        int currentDayOfWeek = (int)tempdate.DayOfWeek;
+                                        if (currentDayOfWeek == 0)
+                                        {
+                                            currentDayOfWeek = 7; 
+                                        }
+
+                                        
+                                        for (int i = 1; i < currentDayOfWeek; i++)
+                                        {
+                                        <td></td>
+                                    }                            
+                                    for (int i = 1; i <= daysInMonth; i++)
+                                    {
+                                        if (currentDayOfWeek > 7)
+                                        {
+                                            @:</tr><tr>
+                                                currentDayOfWeek = 1;
+                                            }
+
+                                            <td>
+                                                <button class="btn btn-outline-success text-center border-0"
+                                                        style="width: 100%; height: 100%;"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modal-@ay.Key-@i">
+                                                    @i
+                                                </button>
+                                            </td>
+                                            currentDayOfWeek++;
+                                        }
+                                        while (currentDayOfWeek <= 7)
+                                        {
+                                            <td></td>
+                                            currentDayOfWeek++;
+                                        }
+                                    }
+                                    </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    foreach (var ay in ayListesi)
+    {
+        DateTime currentModalDate = new DateTime(currentDate.Year, ay.Key, 1);
+        int modalDaysInMonth = DateTime.DaysInMonth(currentYear, ay.Key);
+        for (int i = 1; i <= modalDaysInMonth; i++)
+        {
+            string modalId = "modal-" + ay.Key + "-" + i;
+            string modalTitle = currentModalDate.ToString("dd MMMM yyyy");
+
+            <div class="modal fade" id="@modalId" data-bs-backdrop="static" data-bs-keyboard="false"
+                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">@modalTitle</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            @{
+                                DailyActivity daily = userManager.GetUsersCurrentDailyLog(user.UserId, currentModalDate);
+                                var hourlyActivities = daily?.HourlyActivity.OrderBy(ha=>ha.Time).ToList();
+                            }
+                            @if (hourlyActivities != null && hourlyActivities.Count > 0)
+                            {
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Saat</th>
+                                            <th>Açıklama</th>
+                                            <th>Proje Kodu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var activity in hourlyActivities)
+                                        {
+                                            <tr>
+                                                <td>@activity.Time</td>
+                                                <td>@activity.Description</td>
+                                                <td>@activity.ProjectCode</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <p>Bu güne ait aktiviteniz bulunmamaktadır.</p>
+                            }
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            currentModalDate = currentModalDate.AddDays(1);
+        }
+    }
+
+}

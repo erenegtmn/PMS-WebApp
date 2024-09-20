@@ -1,0 +1,65 @@
+﻿@using RDChartSite.Entities.ValueObjects
+@model LoginViewModel
+@{
+    ViewBag.Title = "Giriş Yap | Ortem Elektronik";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<style type="text/css">
+    .validation-summary-errors {
+        border: 2px dotted #e0d320;
+        background-color: #f7e984;
+        border-radius: 8px;
+        opacity: 0.7;
+        text-align: center;
+    }
+
+        .validation-summary-errors ul {
+            list-style-type: none;
+            padding-top: 10px;
+            color: black;
+        }
+</style>
+@using (Html.BeginForm())
+{
+
+<div class="card-body">
+    @Html.ValidationSummary(false)
+   
+   
+    <form>
+        <div class="form-group">
+            <label for="email">E-Posta Adresi:</label>
+            @Html.TextBoxFor(model => model.Email, new
+       {
+           @class = "form-control",
+           id = "login_email",
+           placeholder = "E-Posta Adresinizi Girin",
+           type = "email"
+       })
+        </div>
+
+        <div class="form-group">
+            <label for="password">Şifre:</label>
+            @Html.TextBoxFor(model => model.password, new
+            {
+           @class = "form-control",
+           id = "login_password",
+           placeholder = "Şifrenizi Girin",
+           type = "password"
+             })
+        </div>
+        <div class="btn-group d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-block ">Giriş Yap</button>
+            <button type="button" class="btn btn-secondary btn-block "
+                    onclick="location.href='/Home/SignUp';">
+                Kullanıcı Oluştur
+            </button>
+        </div>
+    </form>
+    <hr>
+    <div class="form-text">
+        <a href="forgotpassword.html" class="btn">Şifremi Unuttum</a>
+    </div>
+</div>
+}

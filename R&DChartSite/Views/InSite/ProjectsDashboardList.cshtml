@@ -1,0 +1,100 @@
+﻿@model IEnumerable<RDChartSite.Entities.Projects>
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Projeler";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    Users user = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    ActivitiesManager activitiesManager = new ActivitiesManager();
+
+
+}
+
+<style>
+    .card {
+        box-shadow: -4px 6px 11px -1px rgba(122,122,122,0.67);
+        /*   border-left-color: black;
+        border-left-width: 3px;*/
+    }
+
+    a {
+        color: grey;
+    }
+
+        a:hover {
+            color: darkgrey;
+        }
+    .progress {
+        position: relative;
+    }
+
+    .progress-bar-title {
+        position: absolute;
+        text-align: center;
+        line-height: 20px; 
+        overflow: hidden;
+        color: #fff;
+        right: 0;
+        left: 0;
+        top: 0;
+    }
+</style>
+<div class="card-group d-flex flex-wrap row row-cols-1 row-cols-md-3 ms-2">
+    @foreach (var item in Model)
+    {
+        <div class="col mb-4">
+            <div class="card bg-light " style="height:300px;">
+                <div class="card-body">
+                    <h5 class="card-title"><b>@item.ProjectName</b></h5>
+                    <div class="h-50 border-bottom">
+
+                        <p class="card-text text-sm-start" style="font-family:'poppins',sans-serif;font-size:14px;">
+                            @item.ProjectDescription
+                        </p>
+
+                    </div>
+                    <div class="progress">
+                        @{
+                            int progressPercentage = (int)(((double)activitiesManager.ProjectHoursCount(item.ProjectCode) / (double)item.EstimatedWorkingHours) * 100);
+                        }
+                        <div class="progress-bar bg-success text-center" role="progressbar" style="width: @progressPercentage%" aria-valuenow="@progressPercentage" aria-valuemin="0" aria-valuemax="100">
+
+                        </div>
+                    </div>
+
+                    <div class="row d-flex m-1 justify-content-sm-around  align-content-center " style="height:40%;">
+
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <i class="bi bi-people" style="font-size: 35px; "></i>
+                                <div class="ms-3">
+                                    <h4 class="mb-0">@activitiesManager.ProjectUsersCount(item.ProjectCode)</h4>
+                                    <p class="mb-0" style="font-size: 16px;">Çalışan</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <i class="bi bi-clock" style="font-size: 35px; "></i>
+                                <div class="ms-3">
+                                    <h4 class="mb-0">@activitiesManager.ProjectHoursCount(item.ProjectCode)</h4>
+                                    <p class="mb-0" style="font-size: 16px;">Saat</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="~/Projects/Details/@item.Id" id="@item.Id">
+                        Proje detaylarını görüntülemek için tıklayınız <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+

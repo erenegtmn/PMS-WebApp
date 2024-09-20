@@ -1,0 +1,45 @@
+﻿@model IEnumerable<RDChartSite.Entities.Teams>
+@using RDChartSite.BussinessLayer
+@using RDChartSite.Entities
+
+@{
+    ViewBag.Title = "Çalışan Ekipleri";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    UserManager userMng = new UserManager();
+    TeamsManager teamsManager = new TeamsManager();
+    List<Teams> teams = teamsManager.GetTeams();
+}
+
+<div class="container m-3">
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TeamName)
+            </th>
+            <th>
+                Ekip Lideri
+            </th>
+            <th> @Html.ActionLink("Yeni Ekip Oluştur", "Create")</th>
+        </tr>
+
+        @foreach (var item in teams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeamName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Leader.Name)
+                    @Html.DisplayFor(modelItem => item.Leader.Surname)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.TeamId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.TeamId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.TeamId })
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

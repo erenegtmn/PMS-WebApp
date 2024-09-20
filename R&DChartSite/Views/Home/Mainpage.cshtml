@@ -1,0 +1,199 @@
+﻿@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    ViewBag.Title = "Ana Sayfa";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    Users user = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    ActivitiesManager activitiesManager = new ActivitiesManager();
+    List<Projects> currentusersprojects = new List<Projects>();
+    Users currentUser = new Users();
+
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+        currentUser = userManager.Find(x => x.UserId == user.UserId);
+    }
+    DailyActivity usersactivities = activitiesManager.Find(x => x.UserId == currentUser.UserId);
+    int monthlytotalhours = 0;
+}
+
+<script src="~/Scripts/piechart.js"></script>
+
+<link href="~/css/homepagestyle.css" rel="stylesheet" />
+
+
+<!-- MAIN PAGE CODES -->
+
+<div class="container-fluid">
+    <div class="row ">
+        @*LEFT COLUMN*@
+
+        <div class="col-lg-3 col-md-6 mb-4" id="col3">
+
+            <div>
+                @Html.Partial("_SelectedProjects")
+            </div>
+            <div class="card" style="margin-top:20px;display:none">
+                <div class="card-body">
+                    <table id="tblforchart2">
+
+                        @{
+                            Dictionary<string, int> projectshours = new Dictionary<string, int>();
+                            projectshours = userManager.GetProjectRecordsForUser(currentUser.UserId);
+                            foreach (var item in projectshours)
+                            {
+
+                                string projectname = projectsManager.FindProjectNameByCode(item.Key);
+
+                                <tr>
+                                    <td>@projectname</td>
+                                    <td>@item.Value</td>
+                                </tr>
+                            }
+
+                        }
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body" style="max-height:600px;height:400px;">
+
+                </div>
+            </div>
+        </div>
+        @*MIDDLE COLUMN*@
+         <div class="col-lg-6 col-md-6 mb-4" id="col2">
+        <div class="card" style="height:360px;">
+            <div class="card-header d-flex  justify-content-center align-items-center">
+                <h5>Günlük Çalışma Saatleri</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 20px; height:481px; width: 100%;">
+            <div class="card-header d-flex justify-content-center  align-items:center">
+                <h5 >Projelerin Saatlik Dağılımı</h5>
+            </div>
+            <div class="card-body d-flex justify-content-center align-items-center" style="padding: 0;">
+                <div class="graph-container" style="flex: 1; height: 100%; width: 100%;">
+                    <canvas class="pie-graph" id="myChart2" style="max-width: 100%; max-height: 100%;padding:10px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+        @*RIGHT COLUMN*@
+        <div class="col-lg-3 col-md-6 mb-4" id="col1">
+            <div class="card">
+                <div class="card-header d-flex  justify-content-center align-items-center">
+                    <h5>Çalışma Saatleri Tablosu</h5>
+                </div>
+                <div class="card-body justify-content-center align-items-center">
+                    <div class="table-responsive">
+                        <table id="tbl" class="table table-responsive  table-sm" style="margin-bottom:0;padding-bottom:0; width:100%;">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-center">Gün</th>
+                                    <th scope="col" class="text-center">Toplam Saat</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+                                {
+                                    DateTime currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, i);
+                                    var totalhours = activitiesManager.GetHourlyActivityCount(currentUser.UserId, currentDate);
+                                    monthlytotalhours += totalhours;
+                                    if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday)
+                                    {
+                                        continue;
+                                    }
+                                    <tr>
+                                        <td class="text-center">
+                                            <label id="day">@DateTime.Now.ToString("yyyy-MM-")@i</label>
+                                        </td>
+                                        <td class="text-center">
+                                            <label id="hours">@totalhours</label>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="col" style="text-align:center; font-size:12px;">Aylık Toplam Saat</th>
+                                    <th scope="col" class="text-center">@monthlytotalhours</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    const table = document.getElementById('tbl');
+
+    const days = [];
+    const hours = [];
+
+    for (let i = 1; i < table.rows.length - 1; i++) {
+        const row = table.rows[i];
+
+        const day = row.cells[0].textContent;
+        const hour = row.cells[1].textContent;
+
+
+        const date = new Date(day);
+        const formattedDay = date.toLocaleString('tr-TR', { month: 'short', day: 'numeric' });
+
+        days.push(formattedDay);
+        hours.push(hour);
+    }
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+
+            labels: days,
+            datasets: [{
+                label: 'Saat',
+                data: hours,
+                backgroundColor: '#992d2d',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 24,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Günlük Çalışma Saatleri',
+
+                }
+            }
+        }
+    });
+</script>
+

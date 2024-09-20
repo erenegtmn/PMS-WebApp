@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDChartSite.WebApp", "R&DChartSite\RDChartSite.WebApp.csproj", "{D4E0E325-B478-4ADE-8D79-6B0DD0132FD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDChartSite.Entities", "R&DChartSite.Entities\RDChartSite.Entities.csproj", "{657BDCC1-14F4-4ED8-9D3A-80FF18D0E8DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDChartSite.DataAccessLayer", "R&DChartSite.DataAccessLayer\RDChartSite.DataAccessLayer.csproj", "{36A347A1-1D5F-4BF2-A3C9-B1AAF8B438AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDChartSite.Core", "R&DChartSite.Core\RDChartSite.Core.csproj", "{AD980381-55B4-40A1-B42E-CE257E0F96E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDChartSite.Common", "R&DChartSite.Common\RDChartSite.Common.csproj", "{D17CF971-0699-40E3-8D5B-A053648ED244}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RDChartSite.BussinessLayer", "R&DChartSite.BussinessLayer\RDChartSite.BussinessLayer.csproj", "{874B5695-64A4-4A35-A8EB-4A83BEC7CCB8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4E0E325-B478-4ADE-8D79-6B0DD0132FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4E0E325-B478-4ADE-8D79-6B0DD0132FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4E0E325-B478-4ADE-8D79-6B0DD0132FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4E0E325-B478-4ADE-8D79-6B0DD0132FD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{657BDCC1-14F4-4ED8-9D3A-80FF18D0E8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{657BDCC1-14F4-4ED8-9D3A-80FF18D0E8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{657BDCC1-14F4-4ED8-9D3A-80FF18D0E8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{657BDCC1-14F4-4ED8-9D3A-80FF18D0E8DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A347A1-1D5F-4BF2-A3C9-B1AAF8B438AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A347A1-1D5F-4BF2-A3C9-B1AAF8B438AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A347A1-1D5F-4BF2-A3C9-B1AAF8B438AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A347A1-1D5F-4BF2-A3C9-B1AAF8B438AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD980381-55B4-40A1-B42E-CE257E0F96E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD980381-55B4-40A1-B42E-CE257E0F96E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD980381-55B4-40A1-B42E-CE257E0F96E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD980381-55B4-40A1-B42E-CE257E0F96E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D17CF971-0699-40E3-8D5B-A053648ED244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D17CF971-0699-40E3-8D5B-A053648ED244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D17CF971-0699-40E3-8D5B-A053648ED244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D17CF971-0699-40E3-8D5B-A053648ED244}.Release|Any CPU.Build.0 = Release|Any CPU
+		{874B5695-64A4-4A35-A8EB-4A83BEC7CCB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{874B5695-64A4-4A35-A8EB-4A83BEC7CCB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{874B5695-64A4-4A35-A8EB-4A83BEC7CCB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{874B5695-64A4-4A35-A8EB-4A83BEC7CCB8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C243881-9A10-40A5-B980-AC02E85000C3}
+	EndGlobalSection
+EndGlobal

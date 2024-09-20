@@ -1,0 +1,487 @@
+﻿@model RDChartSite.Entities.Projects
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+
+@{
+    ViewBag.Title = "Proje Bilgileri";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+    Users user = new Users();
+    UserManager userManager = new UserManager();
+    TeamsManager teamsManager = new TeamsManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    ActivitiesManager activitiesManager = new ActivitiesManager();
+    List<int> leadersIds = new List<int>();
+    leadersIds = teamsManager.GetLeadersList();
+    List<Users> leaderUsers = new List<Users>();
+    List<Users> users = userManager.GetUsers();
+
+    foreach (var item in leadersIds)
+    {
+        leaderUsers.Add(userManager.GetUser(item));
+    }
+    List<Teams> teams = teamsManager.GetTeamsForProject(Model.ProjectCode);
+
+}
+
+<style>
+
+    .card {
+        background-color: #fff;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /*  .card:hover {
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+        }*/
+
+    .card-body {
+        padding: 20px;
+    }
+
+    span {
+        font-size: 18px;
+    }
+
+    .card-header {
+        /*background-color: #151515;*/
+    }
+
+    .button-81 {
+        background-color: #992d2d;
+        border: 1px solid;
+        border-radius: 1.2rem;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: "Basier circle",-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+        font-size: 0.7rem;
+        font-weight: 600;
+        line-height: 1;
+        padding: 0 1.2rem;
+        text-align: center;
+        text-decoration: none #0d172a solid;
+        text-decoration-thickness: auto;
+        transition: all .1s cubic-bezier(.4, 0, .2, 1);
+        box-shadow: 0px 1px 2px rgba(166, 175, 195, 0.25);
+        height: 30px;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+    }
+
+
+        .button-81:hover {
+            background-color: #fff;
+            border-color: #992d2d;
+            color: #0d172a;
+        }
+</style>
+<div class="ms-2">
+
+
+
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="card ms-0 " style="height:100%">
+                <div class="card-header text-center">
+                    <h6 class="card-text">ÖZET</h6>
+                </div>
+                <div class="card-body ">
+                    <div class="row d-flex align-items-center mt-4">
+                        <div class="col-md-6">
+                            <div class="row mb-2">
+                                <div class="col-md-12 mb-2">
+                                    <b>Başlangıç Tarihi:</b> @Model.StartingDate.Date.ToString("dd.MM.yyyy")
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <b>Toplam Çalışan:</b> @projectsManager.UsersForProjectById(Model.Id)
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <b>Haftalık Çalışma Saati:</b> @activitiesManager.ProjectWeeklyHoursCount(Model.ProjectCode)
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <b>Güncel Maliyet:</b> <span id="currentCostValue" style="font-size:18px;"></span> TL
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row mb-2 start-0">
+                                <div class="col-md-12 mb-2">
+                                    <b>Hedeflenen Bitiş Tarihi:</b> @Model.EndingDate.Date.ToString("dd.MM.yyyy")
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <b>Hedeflenen Maliyet:</b> @Model.EstimatedExpense TL
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <b>Hedeflenen Çalışma Saati:</b> @Model.EstimatedWorkingHours
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <b>Toplam Çalışma Saati:</b> @activitiesManager.ProjectHoursCount(Model.Id)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <p id="weeklyProgress"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p id="workPercentageInfo" class="text-warning">
+                                    Bu günlük ortalama çalışma süresi ile "X" hafta içerisinde proje bitebilir.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-6">
+                            <h5>Maliyet Grafiği</h5>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-end pe-md-4">
+                            <div class="row g-3">
+                                <div class="col-md-6 ms-auto">
+                                    <select id="groupDropdowndoughnut" class="form-select" style="height: 30px; font-size: 12px; color: grey; width: 100%;">
+                                        <option disabled selected>Grup Seçin...</option>
+                                        @foreach (var item in teams)
+                                        {
+                                            <option value="@item.TeamId"> @item.TeamName </option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select id="employeeDropdowndoughnut" class="form-select" style="height: 30px; font-size: 12px; color: grey; width: 100%;">
+                                        <option disabled selected>Çalışan Seçin...</option>
+                                        @foreach (var item in users)
+                                        {
+                                            <option value="@item.UserId"> @item.Name @item.Surname </option>
+
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <canvas id="expensechart" width="100%" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-3">
+                    <h4>@Html.DisplayFor(model => model.ProjectName)</h4>
+                    <div class="d-flex row">
+                        <div class="col-sm-4 align-items-center">
+                            <p class="text-muted">@Html.DisplayFor(model => model.ProjectCode)</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <p class="" style="color:@(Model.IsProjectActive ? "#28a745" : "#dc3545")">
+                                <i class="bi bi-circle-fill" style="font-size:12px;"></i>
+                                @(Model.IsProjectActive ? "Aktif" : "Pasif")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 d-flex justify-content-end pe-md-4 mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-2 ms-auto">
+                            <select id="groupDropdown" class="form-select" style="height: 30px; font-size: 12px; color: grey ">
+                                <option disabled selected>Grup Seçin...</option>
+                                @foreach (var item in teams)
+                                {
+                                    <option value="@item.TeamId"> @item.TeamName </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="employeeDropdown" class="form-select" style="height: 30px; font-size: 12px; color:grey">
+                                <option disabled selected >Çalışan Seçin...</option>
+                                @foreach (var item in users)
+                                {
+                                    <option value="@item.UserId"> @item.Name @item.Surname </option>
+
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <input placeholder="Başlangıç Tarihi:"
+                                       class="form-control"
+                                       type="text"
+                                       style="width: 190px; height:30px; font-size:12px;"
+                                       onfocus="(this.type='date')"
+                                       onblur="(this.type='text')"
+                                       id="startDate" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group">
+                                <input placeholder="Bitiş Tarihi:"
+                                       class="form-control"
+                                       type="text"
+                                       style="width: 180px; height: 30px; font-size: 12px;"
+                                       onfocus="(this.type='date')"
+                                       onblur="(this.type='text')"
+                                       id="endDate" />
+                            </div>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="button-81" id="applybutton" role="button">Uygula</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <canvas id="projectslinechart" style="max-height: 400px;"></canvas>
+                    </div>
+                </div>
+
+                @*<div class="row mt-4">
+                        <div class="col-md-12">
+                            <p>
+                                @Html.ActionLink("Düzenle", "Edit", new { id = Model.Id }, new { @class = "btn btn-primary" })
+                                @Html.ActionLink("Listeye Geri Dön", "Index", new { }, new { @class = "btn btn-secondary" })
+                            </p>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+    <div class="row pt-4">
+        <div class="col-md-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5>Çalışan Dağılımı</h5>
+
+                    <div class="accordion" id="teamAccordion">
+                        @foreach (var team in teams)
+                        {
+                            List<Users> usersinteam = team.Users.ToList();
+                            var teamId = "team_" + team.TeamId;
+                            var collapseId = "teamCollapse_" + team.TeamId;
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="teamHeader_@teamId">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                                        @team.TeamName
+                                    </button>
+                                </h2>
+                                <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="teamHeader_@teamId" data-bs-parent="#teamAccordion">
+                                    <div class="accordion-body">
+                                        <p class="text-muted">Takım Lideri:"@team.Leader.Name @team.Leader.Surname"</p>
+                                        <ul class="list-unstyled">
+                                            @foreach (var member in usersinteam)
+                                            {
+                                                <li>@member.Name @member.Surname</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div style="display:none">
+    <div id="UserCount">
+        @projectsManager.UsersForProjectById(Model.Id)
+    </div>
+    <div id="ProjectsHoursCount">
+        @activitiesManager.ProjectHoursCount(Model.Id)
+    </div>
+    <div id="EstimatedWorkingHours">
+        @Model.EstimatedWorkingHours
+    </div>
+    <div id="endingdate">
+        @Model.EndingDate.Month
+    </div>
+    <div id="startingDate">
+        @Model.StartingDate.Month
+    </div>
+
+    <div id="weeklyWorkingHours">
+        @activitiesManager.ProjectWeeklyHoursCount(Model.ProjectCode)
+    </div>
+</div>
+
+
+<script>
+    let chartInstance = null;
+
+    function createChart(data) {
+        if (chartInstance) {
+            chartInstance.destroy();
+        }
+
+        chartInstance = new Chart("projectslinechart", {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Saat',
+                    data: data.data,
+                    backgroundColor: '#992d2d',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                aspectRatio: 0.8,
+                scales: {
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            padding: 2,
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 10
+                        }
+                    }
+                },
+            }
+        });
+    }
+$(document).ready(function () {
+    var initialData = {
+        labels: ['Eylül', 'Ekim', 'Kasım', 'Aralık', 'Ocak'],
+        data: [250, 400, 150, 300, 200]
+    };
+    createChart(initialData);
+
+    $('#applybutton').click(function () {
+        var groupId = $('#groupDropdown').val();
+        var employeeId = $('#employeeDropdown').val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var projectCode = '@Model.ProjectCode';
+        $.ajax({
+            url: '@Url.Action("FilterChartData", "Projects")',
+            type: 'GET',
+            data: {
+                groupId: groupId,
+                employeeId: employeeId,
+                startDate: startDate,
+                endDate: endDate,
+                projectCode : projectCode
+            },
+            success: function (response) {
+                createChart(response.chart);
+            },
+            error: function (xhr, status, error) {
+                console.error('Status:', status);
+                console.error('Error:', error);
+                console.error('Response:', xhr.responseText);
+            }
+        });
+    });
+});
+
+
+
+
+
+    var weeklyWorkingHours = parseInt(document.getElementById("weeklyWorkingHours").innerText.trim());
+    function calculateCurrentCost() {
+
+        var totalUserCount = parseInt(document.getElementById('UserCount').innerText.trim());
+
+        var salaries = generateSalariesArray(totalUserCount);
+        var avarageSalary = salaries.reduce((a, b) => a + b, 0) / salaries.length;
+        var hourlyRate = avarageSalary / 225;
+        var currentCost = hourlyRate * weeklyWorkingHours * totalUserCount;
+
+        var currentCostElement = document.getElementById('currentCostValue');
+        currentCostElement.innerText = currentCost.toFixed(2);
+
+
+    }
+    function generateSalariesArray(userCount) {
+        var salaries = [];
+
+        for (var i = 0; i < userCount; i++) {
+            var randomSalary = Math.floor(Math.random() * (50000 - 30000 + 1)) + 30000;
+            salaries.push(randomSalary);
+        }
+
+        return salaries;
+    }
+
+    function calculateWorkPercentageForProject(targetHours, projectDurationMonths) {
+
+        var dailyHours = 8;
+        var monthlyHours = 225;
+
+        var totalAvailableHours = monthlyHours * projectDurationMonths;
+
+        var workPercentage = (targetHours / totalAvailableHours) * 100;
+
+        return workPercentage.toFixed(2);
+    }
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        calculateCurrentCost();
+        var dailyWorkHours = 8;
+        var monthlyWorkHours = 225;
+        var workPercentageInfoElement = document.getElementById('workPercentageInfo');
+
+        var targetWorkingHours = parseInt(document.getElementById('EstimatedWorkingHours').innerText.trim());
+        var startDate = parseInt(document.getElementById('startingDate').innerText.trim());
+        var endDate = parseInt(document.getElementById('endingdate').innerText.trim());
+        var projectDurationMonths = (endDate - startDate) + 1;
+        var totalWeeks = projectDurationMonths * 4;
+        var weeklyTarget = targetWorkingHours / totalWeeks;
+
+
+        var difference = weeklyWorkingHours - weeklyTarget;
+
+        var workPercentage = calculateWorkPercentageForProject(targetWorkingHours, projectDurationMonths);
+
+        workPercentageInfoElement.innerText = "Projenin hedef sürede bitmesi için çalışanlar mesai sürelerinin " + workPercentage + "%'ini bu projeye harcamalıdır."
+
+        var progressElement = document.getElementById("weeklyProgress");
+        if (difference < 0) {
+            progressElement.innerHTML = "Bu hafta için hedeflenen çalışma saatinden " + difference.toFixed(2) + " saat geridesiniz.";
+            progressElement.style.color = "red";
+        } else if (difference > 0) {
+            progressElement.innerHTML = "Bu hafta için hedeflenen çalışma saatinden " + Math.abs(difference).toFixed(2) + " saat ileridesiniz.";
+            progressElement.style.color = "green";
+        } else {
+            progressElement.innerHTML = "Bu hafta hedeflenen çalışma saatine ulaşılmıştır.";
+            progressElement.style.color = "black";
+        }
+    });
+</script>
+
+<script src="~/Scripts/ExpenseChart.js"></script>
+

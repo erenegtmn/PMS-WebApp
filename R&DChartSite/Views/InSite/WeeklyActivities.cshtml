@@ -1,0 +1,56 @@
+﻿@model List<RDChartSite.Entities.DailyActivity>
+@using RDChartSite.BussinessLayer
+@using RDChartSite.Entities
+
+
+
+@{
+    ViewBag.Title = "Haftalık Aktiviteler";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+
+    UserManager userManager = new UserManager();
+    Users user = new Users();
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+    }
+}
+
+
+<div class="container mt-4">
+    @foreach (var dailyActivity in Model)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+                @dailyActivity.User.Name @dailyActivity.User.Surname - @dailyActivity.Date.ToString("dd/MM/yyyy")
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-sm">
+                    <thead class="" style="font-size:13px;">
+                        <tr>
+                            <th>SAAT</th>
+                            <th>AÇIKLAMA</th>
+                            <th>PROJE KODU</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var hourlyActivity in dailyActivity.HourlyActivities)
+                        {
+                            <tr>
+                                <td>@hourlyActivity.Time.ToString(@"hh\:mm")</td>
+                                <td>@hourlyActivity.Description</td>
+                                <td>@hourlyActivity.ProjectCode</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
+

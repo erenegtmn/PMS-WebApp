@@ -1,0 +1,155 @@
+﻿@model RDChartSite.Entities.Projects
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-md-6">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-horizontal">
+                    <h4>Proje Oluştur</h4>
+                    <hr />
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        <label>Proje İsmi:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.ProjectName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ProjectName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Proje Kodu:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.ProjectCode, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ProjectCode, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Proje Açıklaması:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.ProjectDescription, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ProjectDescription, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Başlangç Tarihi:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.StartingDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                            @Html.ValidationMessageFor(model => model.StartingDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hedeflenen Çalışma Saati:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.EstimatedWorkingHours, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.EstimatedWorkingHours, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label>Tahmini Bitiş Tarihi:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.EndingDate, new { htmlAttributes = new { @class = "form-control", type = "date" } })
+                            @Html.ValidationMessageFor(model => model.EndingDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Proje Aktif Mi?</label>
+                        <div class="col-md-10">
+                            @Html.CheckBoxFor(model => model.IsProjectActive, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.IsProjectActive, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group " style="">
+                        <label>Tahmini Maliyet:</label>
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.EstimatedExpense, new { htmlAttributes = new { @class = "form-control", id = "EstimatedExpense" } })
+                            @Html.ValidationMessageFor(model => model.EstimatedExpense, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10 mt-2">
+                            <button type="submit" value="Create" class="btn btn-success">Create</button>
+                            @Html.ActionLink("Back to List", "Index", "Projects", new { @class = "btn btn-primary" })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h4>Hesap Makinesi</h4>
+            <hr />
+            <p> Çalışan maaşları ortalama 40.000TL ve aylık maximum mesai saati 225 Saat olarak kabul edilmiştir. </p>
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label>Çalışan Sayısı:</label>
+                    <div class="col-md-10">
+                        <input type="number" id="employeeCount" class="form-control" onchange="calculateCost()" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Çalışan Başına Öngörülen Aylık Mesai Saati:</label>
+                    <div class="col-md-10">
+                        <input type="number" id="hoursPerEmployee" class="form-control" onchange="calculateCost()" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Projenin Süresi (Ay):</label>
+                    <div class="col-md-10">
+                        <input type="number" id="projectDuration" class="form-control" onchange="calculateCost()" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tahmini Maliyet:</label>
+                    <div class="col-md-10">
+                        <span id="estimatedCost">0</span> TL
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function calculateCost() {
+        var employeeCount = parseFloat(document.getElementById('employeeCount').value) || 0;
+        var hoursPerEmployee = parseFloat(document.getElementById('hoursPerEmployee').value) || 0;
+        var projectDuration = parseFloat(document.getElementById('projectDuration').value) || 0;
+
+        var averageSalary = 40000;
+
+        var estimatedCost = Math.round((averageSalary / 225) * hoursPerEmployee * employeeCount * projectDuration);
+        var roundedCost = parseInt(estimatedCost);
+        var ceiledCost = Math.ceil(roundedCost / 100) * 100
+
+        document.getElementById('estimatedCost').innerText = roundedCost;
+        document.getElementById('EstimatedExpense').value = ceiledCost;
+        document.getElementById('EstimatedExpense').innerText = ceiledCost;
+    }
+</script>
+
+
+
+

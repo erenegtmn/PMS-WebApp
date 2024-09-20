@@ -1,0 +1,42 @@
+﻿
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@{
+    Users user = new Users();
+    UserManager userManager = new UserManager();
+    ProjectsManager projectsManager = new ProjectsManager();
+    List<Projects> currentusersprojects = new List<Projects>();
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+        Users currentUser = userManager.Find(x => x.UserId == user.UserId);
+
+        if (currentUser != null)
+        {
+            currentusersprojects = projectsManager.GetCurrentUsersProjects(currentUser.UserId);
+
+        }
+
+    }
+}
+
+<div class="card">
+    <div class="card-header text-center justify-content-center">
+        <h5 class="">Çalışılan Projeler</h5>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            @foreach (var item in currentusersprojects)
+            {
+                <li class="list-group-item">
+                   <i class="bi bi-check"></i> @item.ProjectName - @item.ProjectCode
+                </li>
+
+            }
+        </ul>
+    </div>
+</div>
+
+   
+   
+

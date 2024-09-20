@@ -1,0 +1,114 @@
+﻿@using RDChartSite.Entities.ValueObjects
+@using RDChartSite.Entities
+@using RDChartSite.BussinessLayer
+@model SignUpViewModel
+@{
+    ViewBag.Title = "Kayıt Oluştur | Ortem Elektronik";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    TeamsManager teamsManager = new TeamsManager();
+    List<Teams> teams = teamsManager.List();
+}
+
+<style type="text/css">
+    .validation-summary-errors {
+        border: 2px dotted #e0d320;
+        background-color: #f7e984;
+        border-radius: 8px;
+        opacity: 0.7;
+        text-align: center;
+    }
+
+        .validation-summary-errors ul {
+            list-style-type: none;
+            padding-top: 10px;
+            color: black;
+        }
+
+    select option.placeholder {
+        color: #999;
+    }
+</style>
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(false)
+    <div class="card-body">
+
+        <div class="form-group">
+            <label for="Name">Ad:</label>
+            @Html.TextBoxFor(model => model.firstName, new { @class = "form-control", placeholder = "Adınızı Girin", id = "Name" })
+        </div>
+        <div class="form-group">
+            <label for="Surname">Soyad:</label>
+            @Html.TextBoxFor(model => model.lastName, new { @class = "form-control", placeholder = "Soyadınızı Girin", id = "Surname" })
+        </div>
+        @if (Model.AvailableTeams.Count > 0)
+        {<div class="form-group">
+                <label for="Team">Ekip Seçin:</label>
+                <select class="form-select" name="SelectedTeamId">
+                    <option value="0" selected disabled hidden class="placeholder"> Çalıştığınız ekibi seçin... </option>
+                    @foreach (var item in Model.AvailableTeams)
+                    {
+                        <option value="@item.TeamId">@item.TeamName</option>
+                    }
+                </select>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                <label for="Team">Ekip Seçin:</label>
+                <select>
+                    <option value="0" disabled>Veri tabanında ekip mevcut değil</option>
+                </select>
+            </div>
+        }
+        <div class="form-group">
+            <label for="email">E-Posta Adresi:</label>
+            @Html.TextBoxFor(model => model.Email, new
+            {
+                @class = "form-control",
+                placeholder = "E-Posta Adresinizi Girin",
+            id = "email",
+                name = "email",
+                type = "email"
+            })
+            <small class="form-text text-muted">
+                Lütfen sadece ortem.com.tr uzantılı e-posta
+                adresleri kullanın.
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="password">Şifre:</label>
+            @Html.TextBoxFor(model => model.Password, new
+            {
+                @class = "form-control",
+                placeholder = "Şifrenizi Girin",
+            id = "password",
+                name = "password",
+                type = "password"
+            })
+        </div>
+        <div class="form-group">
+            <label for="confirm-password">Şifre Tekrarı:</label>
+            @Html.TextBoxFor(model => model.PasswordCheck, new
+            {
+                @class = "form-control",
+                placeholder = "Şifrenizi Tekrar Girin",
+            id = "confirm-password",
+                name = "confirm-password",
+                type = "password"
+            })
+        </div>
+        <div class="btn-group d-flex justify-content-between">
+            <button id="btn_signup" type="submit" class="btn btn-primary" onclick="validatePassword()">Kayıt Ol</button>
+        </div>
+
+        <hr>
+        <div class="form-text">
+            <a href="/Home/Login">Zaten hesabın var mı? Giriş Yap.</a>
+
+        </div>
+    </div>
+
+}
+

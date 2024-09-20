@@ -1,0 +1,24 @@
+﻿@model RDChartSite.Entities.ValueObjects.MonthlyDataModel
+@using RDChartSite.BussinessLayer
+@using RDChartSite.Entities
+
+
+@{
+    ViewBag.Title = "Aylık Faaliyet Takibi";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+@{
+    UserManager userManager = new UserManager();
+    Users user = new Users();
+    if (Session["Login"] != null)
+    {
+        user = Session["Login"] as Users;
+
+    }
+}
+
+<br />
+<div id="partialcontainer">
+    @Html.Partial("_PartialMonthly")
+</div>
